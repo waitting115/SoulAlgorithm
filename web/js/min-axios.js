@@ -7,9 +7,10 @@ function _axios ({ method = 'GET', url, data = {} }) {
         Object.keys(data).forEach((item) => {
             dataStr += `${item}=${data[item]}&`;
         })
+        
         if(dataStr) {
             //去掉末尾&
-            dataStr = dataStr.subString(0, dataStr.length - 1);
+            dataStr = dataStr.substring(0, dataStr.length - 1);
             url = url + '?' + dataStr;
         }
 
@@ -51,35 +52,24 @@ function _axios ({ method = 'GET', url, data = {} }) {
     });
 }
 _axios.get = function get(url, data = {}) {
-	return new Promise ((resolve, reject) => {
-		let dataStr = '';
-		Object.keys(data).forEach((key) => {
-			dataStr += `${key}=${data[key]}`;
-		})
-		if(dataStr) {
-			dataStr = dataStr.subString(0, dataStr.length - 1);
-			url + '?' + dataStr;
-		}
-
-		const xhr = new XMLHttpRequest();
-		xhr.open("GET", url, true);
-		xhr.send();
-
-		xhr.onreadystatechange = function () {
-			if(xhr.readyState !== 4) return;
-			
-			const { status, statusText } = xhr;			
-			if(xhr.status >= 200 && xhr.status < 300) {
-				const response = {
-					data : JSON.parse(xhr.response),
-					status,
-					statusText,
-				}
-				resolve(response);
-			} else {
-				reject(new Error('request error status is ' + status))
-			}
-		}
-	})
+	const request = {
+		method: 'GET',
+		url: url,
+		data: data
+	};
+	return _axios.call(this,request);
 }
-_axios.post = function ...
+_axios.post = function post(url, data = {}) {
+	const request = {
+		method: 'POST',
+		url: url,
+		data: data
+	};
+	return _axios.call(this,request);
+}
+_axios.all = function all(proArr) {
+    return new Promise.all(proArr);
+}
+_axios.race = function race(proArr) {
+    return new Promise.race(proArr);
+}
